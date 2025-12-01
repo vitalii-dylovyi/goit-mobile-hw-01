@@ -5,25 +5,56 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+// Base colors
+export const BaseColors = {
+  primary: '#007AFF', // iOS blue - matches screenshot
+  white: '#fff',
+  black: '#000',
+  textDark: '#11181C',
+  textGray: '#687076',
+  textLight: '#ECEDEE',
+  backgroundLight: '#E6F4FE',
+  cardBackground: '#F8F9FE',
+  borderLight: '#E5E5E5',
+  backgroundDark: '#151718',
+  iconGray: '#9BA1A6',
+};
+
+const tintColorLight = BaseColors.primary;
+const tintColorDark = BaseColors.white;
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: BaseColors.textDark,
+    background: BaseColors.white,
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: BaseColors.textGray,
+    tabIconDefault: BaseColors.textGray,
     tabIconSelected: tintColorLight,
+    // Additional colors
+    primary: BaseColors.primary,
+    white: BaseColors.white,
+    black: BaseColors.black,
+    textGray: BaseColors.textGray,
+    backgroundLight: BaseColors.backgroundLight,
+    cardBackground: BaseColors.cardBackground,
+    borderLight: BaseColors.borderLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: BaseColors.textLight,
+    background: BaseColors.backgroundDark,
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: BaseColors.iconGray,
+    tabIconDefault: BaseColors.iconGray,
     tabIconSelected: tintColorDark,
+    // Additional colors
+    primary: BaseColors.primary,
+    white: BaseColors.white,
+    black: BaseColors.black,
+    textGray: BaseColors.iconGray,
+    backgroundLight: BaseColors.backgroundDark,
+    cardBackground: BaseColors.cardBackground,
+    borderLight: BaseColors.borderLight,
   },
 };
 
