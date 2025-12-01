@@ -2,6 +2,10 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Screenshot
+
+![App Screenshot](./Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202025-12-01%20at%2013.32.33.png)
+
 ## Get started
 
 1. Install dependencies
