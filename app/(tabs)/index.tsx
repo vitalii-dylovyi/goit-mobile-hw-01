@@ -29,15 +29,15 @@ export default function HomeScreen() {
   );
 
   const pets = [
-    { 
-      id: '1', 
-      name: 'Marta', 
+    {
+      id: '1',
+      name: 'Marta',
       type: 'Cat',
       imageSource: require('@/assets/images/pet_1.png'),
     },
-    { 
-      id: '2', 
-      name: 'Robert', 
+    {
+      id: '2',
+      name: 'Robert',
       type: 'Dog',
       imageSource: require('@/assets/images/pet_2.png'),
     },
@@ -50,7 +50,13 @@ export default function HomeScreen() {
         leftContent={
           <HeaderNotificationsButton onPress={() => router.push('/notifications')} />
         }
-        rightContent={<ProfileButton onPress={() => router.push('/settings')} />}
+        rightContent={
+          <ProfileButton
+            onPress={() => {
+              router.push('/personal-information');
+            }}
+          />
+        }
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <ThemedText style={styles.greeting}>Hello, Mark!</ThemedText>
@@ -66,8 +72,7 @@ export default function HomeScreen() {
               type={pet.type}
               imageSource={pet.imageSource}
               onPress={() => {
-                // TODO: Navigate to pet detail screen when implemented
-                console.log(`Navigate to pet: ${pet.name}`);
+                router.push(`/pet/${pet.id}`);
               }}
             />
           ))}

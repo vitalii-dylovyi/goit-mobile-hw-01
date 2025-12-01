@@ -24,6 +24,7 @@ const MAPPING = {
   'gearshape.fill': 'settings',
   'person.fill': 'person',
   'chevron.left': 'chevron-left',
+  'pencil.fill': 'edit',
 } as IconMapping;
 
 export type IconSymbolName = keyof typeof MAPPING;

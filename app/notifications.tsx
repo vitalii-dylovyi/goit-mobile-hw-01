@@ -14,7 +14,13 @@ export default function NotificationsScreen() {
       <Header
         title="Notifications"
         leftContent={<HeaderBackButton onPress={() => router.back()} />}
-        rightContent={<ProfileButton />}
+        rightContent={
+          <ProfileButton
+            onPress={() => {
+              router.push('/personal-information');
+            }}
+          />
+        }
       />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <ThemedText>No notifications yet</ThemedText>

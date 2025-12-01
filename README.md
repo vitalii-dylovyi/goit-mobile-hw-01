@@ -6,6 +6,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ![App Screenshot](./Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202025-12-01%20at%2013.32.33.png)
 
+## Navigation Showcase
+
+https://github.com/user-attachments/assets/navigation_showcase.mov
+
+<video src="./navigation_showcase.mov" controls width="100%"></video>
+
 ## Get started
 
 1. Install dependencies
