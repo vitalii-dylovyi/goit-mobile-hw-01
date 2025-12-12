@@ -10,7 +10,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 type PetCardProps = {
   name: string;
   type: 'Dog' | 'Cat' | string;
-  imageSource?: ImageSource;
+  imageSource?: ImageSource | string; // Підтримка як локальних зображень, так і URL
   onPress?: () => void;
 };
 

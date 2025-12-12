@@ -12,6 +12,12 @@ https://github.com/user-attachments/assets/navigation_showcase.mov
 
 <video src="./navigation_showcase.mov" controls width="100%"></video>
 
+## Fetch API Showcase
+
+https://github.com/user-attachments/assets/fetch_showcase.mov
+
+<video src="./fetch_showcase.mov" controls width="100%"></video>
+
 ## Get started
 
 1. Install dependencies

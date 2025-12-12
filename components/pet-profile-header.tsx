@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 type PetProfileHeaderProps = {
-  imageSource?: ImageSource;
+  imageSource?: ImageSource | string; // Підтримка як локальних зображень, так і URL
   onEditPress?: () => void;
 };
 
