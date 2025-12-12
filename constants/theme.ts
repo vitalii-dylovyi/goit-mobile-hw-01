@@ -1,13 +1,7 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 import { Platform } from 'react-native';
 
-// Base colors
 export const BaseColors = {
-  primary: '#007AFF', // iOS blue - matches screenshot
+  primary: '#007AFF',
   white: '#fff',
   black: '#000',
   textDark: '#11181C',
@@ -17,6 +11,8 @@ export const BaseColors = {
   cardBackground: '#F8F9FE',
   borderLight: '#E5E5E5',
   backgroundDark: '#151718',
+  cardBackgroundDark: '#1F1F1F',
+  borderLightDark: '#2F2F2F',
   iconGray: '#9BA1A6',
 };
 
@@ -31,7 +27,6 @@ export const Colors = {
     icon: BaseColors.textGray,
     tabIconDefault: BaseColors.textGray,
     tabIconSelected: tintColorLight,
-    // Additional colors
     primary: BaseColors.primary,
     white: BaseColors.white,
     black: BaseColors.black,
@@ -47,26 +42,21 @@ export const Colors = {
     icon: BaseColors.iconGray,
     tabIconDefault: BaseColors.iconGray,
     tabIconSelected: tintColorDark,
-    // Additional colors
     primary: BaseColors.primary,
     white: BaseColors.white,
     black: BaseColors.black,
     textGray: BaseColors.iconGray,
     backgroundLight: BaseColors.backgroundDark,
-    cardBackground: BaseColors.cardBackground,
-    borderLight: BaseColors.borderLight,
+    cardBackground: BaseColors.cardBackgroundDark,
+    borderLight: BaseColors.borderLightDark,
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
     sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
     serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
     rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
     mono: 'ui-monospace',
   },
   default: {

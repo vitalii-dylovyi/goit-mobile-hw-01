@@ -1,3 +1,4 @@
+import { fetchPets, Pet } from '@/api/pets';
 import { FloatingActionButton } from '@/components/floating-action-button';
 import { Header } from '@/components/header';
 import { HeaderNotificationsButton } from '@/components/header-notifications-button';
@@ -6,8 +7,9 @@ import { ProfileButton } from '@/components/profile-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { fetchPets, Pet } from '@/api/pets';
+import { useTheme } from '@/contexts/theme-context';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
+import { toggleFavorite } from '@/store/favoritesSlice';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -19,22 +21,20 @@ import {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
+  
+  // Redux для керування улюбленими тваринами
+  const dispatch = useAppDispatch();
 
-  // Стан для зберігання даних, завантаження та помилок
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Завантаження даних при монтуванні компонента
   useEffect(() => {
     loadPets();
   }, []);
 
-  /**
-   * Функція для завантаження списку тварин з API
-   */
   const loadPets = async () => {
     try {
       setLoading(true);
@@ -42,7 +42,6 @@ export default function HomeScreen() {
       const data = await fetchPets();
       setPets(data);
     } catch (err) {
-      // Обробка помилок (відсутність мережі, помилка сервера тощо)
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load pets';
       setError(errorMessage);
@@ -82,28 +81,29 @@ export default function HomeScreen() {
     [colors.textGray, colors.primary]
   );
 
-  /**
-   * Функція для рендерингу елемента списку
-   */
-  const renderPetItem = ({ item }: { item: Pet }) => (
-    <PetCard
-      name={item.name}
-      type={item.type}
-      imageSource={item.img}
-      onPress={() => {
-        router.push(`/pet/${item.id}`);
-      }}
-    />
-  );
+  const favoriteIds = useAppSelector((state) => state.favorites.favoriteIds);
 
-  /**
-   * Функція для отримання унікального ключа елемента
-   */
+  const renderPetItem = ({ item }: { item: Pet }) => {
+    const isFavorite = favoriteIds.includes(item.id);
+    
+    return (
+      <PetCard
+        name={item.name}
+        type={item.type}
+        imageSource={item.img}
+        isFavorite={isFavorite}
+        onPress={() => {
+          router.push(`/pet/${item.id}`);
+        }}
+        onFavoritePress={() => {
+          dispatch(toggleFavorite(item.id));
+        }}
+      />
+    );
+  };
+
   const keyExtractor = (item: Pet) => item.id;
 
-  /**
-   * Функція для рендерингу заголовка списку
-   */
   const renderListHeader = () => (
     <View>
       <ThemedText style={styles.greeting}>Hello, Mark!</ThemedText>
@@ -113,9 +113,6 @@ export default function HomeScreen() {
     </View>
   );
 
-  /**
-   * Функція для рендерингу стану завантаження
-   */
   const renderLoading = () => (
     <View style={dynamicStyles.loadingContainer}>
       <ActivityIndicator size="large" color={colors.primary} />
@@ -125,9 +122,6 @@ export default function HomeScreen() {
     </View>
   );
 
-  /**
-   * Функція для рендерингу помилки
-   */
   const renderError = () => (
     <View style={dynamicStyles.emptyContainer}>
       <ThemedText style={dynamicStyles.errorText}>
@@ -141,9 +135,6 @@ export default function HomeScreen() {
     </View>
   );
 
-  /**
-   * Функція для рендерингу порожнього списку
-   */
   const renderEmpty = () => (
     <View style={dynamicStyles.emptyContainer}>
       <ThemedText style={dynamicStyles.description}>

@@ -1,6 +1,6 @@
 import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/theme-context';
 import { OpaqueColorValue, StyleSheet, TouchableOpacity } from 'react-native';
 
 type IconButtonProps = {
@@ -12,8 +12,8 @@ type IconButtonProps = {
 };
 
 export function IconButton({ iconName, onPress, size = 24, color, style }: IconButtonProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
   const iconColor = color ?? colors.text;
 
   return (

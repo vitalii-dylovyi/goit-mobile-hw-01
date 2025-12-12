@@ -25,6 +25,8 @@ const MAPPING = {
   'person.fill': 'person',
   'chevron.left': 'chevron-left',
   'pencil.fill': 'edit',
+  'heart': 'favorite',
+  'heart.fill': 'favorite',
 } as IconMapping;
 
 export type IconSymbolName = keyof typeof MAPPING;

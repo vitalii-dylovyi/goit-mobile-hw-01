@@ -18,6 +18,12 @@ https://github.com/user-attachments/assets/fetch_showcase.mov
 
 <video src="./fetch_showcase.mov" controls width="100%"></video>
 
+## Redux & Context API Showcase
+
+https://github.com/user-attachments/assets/redux&context_showcase.mov
+
+<video src="./redux&context_showcase.mov" controls width="100%"></video>
+
 ## Get started
 
 1. Install dependencies

@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/theme-context';
 import { Image, ImageSource } from 'expo-image';
 import { useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -19,8 +19,8 @@ export function UserProfileHeader({
   username,
   onEditPress,
 }: UserProfileHeaderProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
 
   const dynamicStyles = useMemo(
     () =>

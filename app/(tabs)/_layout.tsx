@@ -4,11 +4,11 @@ import React from 'react';
 import { HapticTab } from '@/components/haptic-tab';
 import { TabButton } from '@/components/tab-button';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/theme-context';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
 
   return (
     <Tabs
@@ -18,7 +18,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: colors.white,
+          backgroundColor: colors.background,
           borderTopWidth: 1,
           borderTopColor: colors.borderLight,
           height: 75,

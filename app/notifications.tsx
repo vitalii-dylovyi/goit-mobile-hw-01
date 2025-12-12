@@ -11,8 +11,8 @@ export default function NotificationsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <Header
-        title="Notifications"
+      <Header 
+        title="Notifications" 
         leftContent={<HeaderBackButton onPress={() => router.back()} />}
         rightContent={
           <ProfileButton

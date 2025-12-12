@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/theme-context';
 import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -15,8 +15,8 @@ type PetDetailsListProps = {
 };
 
 export function PetDetailsList({ details }: PetDetailsListProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
 
   const dynamicStyles = useMemo(
     () =>

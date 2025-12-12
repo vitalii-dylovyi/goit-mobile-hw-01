@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/theme-context';
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -17,8 +17,8 @@ type CalendarProps = {
 };
 
 export function Calendar({ days, onDayPress }: CalendarProps) {
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
   const [selectedDate, setSelectedDate] = useState(
     days.find((d) => d.isSelected)?.date || days[0]?.date
   );

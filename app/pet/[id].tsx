@@ -10,7 +10,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Timeline } from '@/components/timeline';
 import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/contexts/theme-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -20,11 +20,7 @@ import {
   View,
 } from 'react-native';
 
-/**
- * Конвертує дані тварини з API у формат деталей для відображення
- */
 function convertPetToDetails(pet: Pet): { label: string; value: string }[] {
-  // Обчислюємо вік на основі дати народження
   const birthDate = new Date(pet.birthdate);
   const today = new Date();
   const ageInMonths = Math.floor(
@@ -35,17 +31,13 @@ function convertPetToDetails(pet: Pet): { label: string; value: string }[] {
       ? `${ageInMonths} months`
       : `${Math.floor(ageInMonths / 12)} years`;
 
-  // Форматуємо дату народження
   const formattedBirthdate = birthDate.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
   });
 
-  // Форматуємо вагу
   const formattedWeight = `${pet.weight} kg`;
-
-  // Форматуємо стать (capitalize first letter)
   const formattedGender =
     pet.gender.charAt(0).toUpperCase() + pet.gender.slice(1);
 
@@ -55,26 +47,22 @@ function convertPetToDetails(pet: Pet): { label: string; value: string }[] {
     { label: 'Date of birth', value: formattedBirthdate },
     { label: 'Gender', value: formattedGender },
     { label: 'Breed', value: pet.breed || '--' },
-    { label: 'Microchip number', value: '--' }, // Не надається API
-    { label: 'Allergies', value: 'None' }, // Не надається API
-    { label: 'Vet clinic contact', value: '--' }, // Не надається API
+    { label: 'Microchip number', value: '--' },
+    { label: 'Allergies', value: 'None' },
+    { label: 'Vet clinic contact', value: '--' },
   ];
 }
 
 export default function PetDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+  const { theme } = useTheme();
+  const colors = Colors[theme];
 
-  // Стан для зберігання даних тварини, завантаження та помилок
   const [pet, setPet] = useState<Pet | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  /**
-   * Функція для завантаження даних тварини з API
-   */
   const loadPet = useCallback(async () => {
     if (!id) return;
 
@@ -84,7 +72,6 @@ export default function PetDetailsScreen() {
       const data = await fetchPetById(id);
       setPet(data);
     } catch (err) {
-      // Обробка помилок (відсутність мережі, тварина не знайдена тощо)
       const errorMessage =
         err instanceof Error ? err.message : 'Failed to load pet';
       setError(errorMessage);
@@ -94,7 +81,6 @@ export default function PetDetailsScreen() {
     }
   }, [id]);
 
-  // Завантаження даних тварини при монтуванні компонента або зміні ID
   useEffect(() => {
     if (id) {
       loadPet();
@@ -107,12 +93,8 @@ export default function PetDetailsScreen() {
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
 
-    // Get the day of the week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
     const dayOfWeek = today.getDay();
-    // Convert to Monday = 0, Tuesday = 1, ..., Sunday = 6
     const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
-    // Calculate Monday of the current week
     const monday = new Date(currentYear, currentMonth, currentDay - mondayOffset);
 
     const dayNames = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
@@ -180,13 +162,11 @@ export default function PetDetailsScreen() {
     [colors.text, colors.primary]
   );
 
-  // Конвертуємо дані тварини у формат деталей
   const petDetails = useMemo(() => {
     if (!pet) return [];
     return convertPetToDetails(pet);
   }, [pet]);
 
-  // Відображення стану завантаження
   if (loading) {
     return (
       <ThemedView style={styles.container}>
@@ -211,7 +191,6 @@ export default function PetDetailsScreen() {
     );
   }
 
-  // Відображення помилки
   if (error || !pet) {
     return (
       <ThemedView style={styles.container}>
@@ -294,7 +273,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 24,
-    paddingBottom: 90, // Space for bottom navigation and FAB
+    paddingBottom: 90,
   },
 });
 
