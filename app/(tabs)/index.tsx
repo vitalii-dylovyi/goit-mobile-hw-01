@@ -1,9 +1,11 @@
 import { fetchPets, Pet } from '@/api/pets';
+import { FilterChip } from '@/components/filter-chips';
 import { FloatingActionButton } from '@/components/floating-action-button';
 import { Header } from '@/components/header';
 import { HeaderNotificationsButton } from '@/components/header-notifications-button';
 import { PetCard } from '@/components/pet-card';
 import { ProfileButton } from '@/components/profile-button';
+import { SearchBar } from '@/components/search-bar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { USE_OPTIMIZATIONS } from '@/config/optimization';
@@ -17,11 +19,12 @@ import {
   setOptimizationPhase,
   trackRender,
 } from '@/utils/render-tracker';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   View,
 } from 'react-native';
@@ -59,15 +62,16 @@ export default function HomeScreen() {
 
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState<boolean>(false);
 
-  useEffect(() => {
-    loadPets();
-  }, []);
-
-  const loadPets = async () => {
+  const loadPets = useCallback(async () => {
     try {
-      setLoading(true);
+      if (!refreshing) {
+        setLoading(true);
+      }
       setError(null);
       const data = await fetchPets();
       setPets(data);
@@ -78,8 +82,25 @@ export default function HomeScreen() {
       console.error('Error loading pets:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, [refreshing]);
+
+  useEffect(() => {
+    loadPets();
+  }, [loadPets]);
+
+  // Refresh pets list when screen comes into focus (e.g., after adding a new pet)
+  useFocusEffect(
+    useCallback(() => {
+      loadPets();
+    }, [loadPets])
+  );
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    loadPets();
+  }, [loadPets]);
 
   const dynamicStyles = useMemo(
     () =>
@@ -112,6 +133,22 @@ export default function HomeScreen() {
   );
 
   const favoriteIds = useAppSelector((state) => state.favorites.favoriteIds);
+
+  const filteredPets = useMemo(() => {
+    let filtered = pets;
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((pet) =>
+        pet.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (showFavoritesOnly) {
+      filtered = filtered.filter((pet) => favoriteIds.includes(pet.id));
+    }
+
+    return filtered;
+  }, [pets, searchQuery, showFavoritesOnly, favoriteIds]);
 
   const handlePetPressCallback = useCallback(
     (petId: string) => {
@@ -167,18 +204,6 @@ export default function HomeScreen() {
   const keyExtractorCallback = useCallback((item: Pet) => item.id, []);
   const keyExtractor = USE_OPTIMIZATIONS ? keyExtractorCallback : (item: Pet) => item.id;
 
-  const renderListHeaderFn = () => (
-    <View>
-      <ThemedText style={styles.greeting}>Hello, Mark!</ThemedText>
-      <ThemedText style={dynamicStyles.description}>
-        Choose a pet to see its reminders.
-      </ThemedText>
-    </View>
-  );
-  const renderListHeaderCallback = useCallback(renderListHeaderFn, [
-    dynamicStyles.description,
-  ]);
-  const renderListHeader = USE_OPTIMIZATIONS ? renderListHeaderCallback : renderListHeaderFn;
 
   const renderLoadingFn = () => (
     <View style={dynamicStyles.loadingContainer}>
@@ -248,33 +273,56 @@ export default function HomeScreen() {
         }
       />
 
+      <View style={styles.contentContainer}>
+        <ThemedText style={styles.greeting}>Hello, Mark!</ThemedText>
+        <ThemedText style={dynamicStyles.description}>
+          Choose a pet to see its reminders.
+        </ThemedText>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search pets..."
+        />
+        <View style={styles.filtersContainer}>
+          <FilterChip
+            label="All"
+            active={!showFavoritesOnly}
+            onPress={() => setShowFavoritesOnly(false)}
+          />
+          <FilterChip
+            label="⭐ Favorites"
+            active={showFavoritesOnly}
+            onPress={() => setShowFavoritesOnly(true)}
+          />
+        </View>
+      </View>
+
       {loading ? (
         <View style={styles.contentContainer}>
-          {renderListHeader()}
           {renderLoading()}
         </View>
       ) : error ? (
         <View style={styles.contentContainer}>
-          {renderListHeader()}
           {renderError()}
         </View>
       ) : (
         <FlatList
           style={styles.scrollView}
           contentContainerStyle={styles.content}
-          data={pets}
+          data={filteredPets}
           renderItem={renderPetItem}
           keyExtractor={keyExtractor}
-          ListHeaderComponent={renderListHeader}
           ListEmptyComponent={renderEmpty}
           ItemSeparatorComponent={renderSeparator}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       )}
 
       <FloatingActionButton
         onPress={() => {
-          // TODO: Navigate to add pet screen
-          console.log('Add new pet');
+          router.push('/add-pet');
         }}
       />
       </ThemedView>
@@ -304,5 +352,10 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 12,
+  },
+  filtersContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
   },
 });

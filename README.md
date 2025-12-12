@@ -1,72 +1,203 @@
-# Welcome to your Expo app 👋
+# MyPets - Mobile Pet Management App 🐾
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Screenshot
+Мобільний застосунок для управління тваринами з функціоналом відстеження подій, нагадувань та інформації про улюблених вихованців.
 
 ![App Screenshot](./Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202025-12-01%20at%2013.32.33.png)
 
-## Navigation Showcase
+## 📱 Основні функції
 
+### Головний екран (My Pets)
+- 📋 Список всіх тварин з API
+- 🔍 **Пошук по імені** (нове!)
+- ⭐ **Фільтрація улюблених** (нове!)
+- 🔄 **Pull-to-refresh** для оновлення (нове!)
+- ❤️ Додавання до улюблених
+- ➕ **Додавання нової тварини** (нове! ✨)
+- 🔄 **Автоматичне оновлення списку** після додавання (нове!)
+
+### Екран деталей тварини
+- 📸 Профіль тварини з фото
+- 📊 Детальна інформація (вага, вік, дата народження, стать, порода)
+- 📅 Календар на тиждень
+- ⏰ Таймлайн з подіями
+- ➕ Додавання нової події
+
+### Notifications екран (нове! ✨)
+- 🔔 Список сповіщень
+- 📌 Різні типи (event, reminder, system)
+- ✅ Статус прочитання
+- ⏱️ Timestamp для кожного сповіщення
+
+### Налаштування
+- 🎨 Перемикач теми (світла/темна/системна)
+- 👤 Профіль користувача
+- ⚙️ Список налаштувань
+
+## 🎥 Демонстрація функцій
+
+### Navigation Showcase
 https://github.com/user-attachments/assets/navigation_showcase.mov
 
 <video src="./navigation_showcase.mov" controls width="100%"></video>
 
-## Fetch API Showcase
-
+### Fetch API Showcase
 https://github.com/user-attachments/assets/fetch_showcase.mov
 
 <video src="./fetch_showcase.mov" controls width="100%"></video>
 
-## Redux & Context API Showcase
-
+### Redux & Context API Showcase
 https://github.com/user-attachments/assets/redux&context_showcase.mov
 
 <video src="./redux&context_showcase.mov" controls width="100%"></video>
 
-## Get started
+## 🛠️ Технічний стек
 
-1. Install dependencies
+- **React Native** + **Expo** - Основа застосунку
+- **Expo Router** - File-based routing
+- **TypeScript** - Типізація
+- **Redux Toolkit** - Управління станом (улюблені тварини)
+- **Context API** - Управління темою
+- **Day.js** - Робота з датами (легка альтернатива moment.js)
+- **React Native Reanimated** - Анімації
+- **Expo Image** - Оптимізована робота з зображеннями
 
-   ```bash
-   npm install
-   ```
+## 📦 Структура проєкту
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+my-pets/
+├── app/                    # Екрани (Expo Router)
+│   ├── (tabs)/            # Tab навігація
+│   │   ├── index.tsx      # Головний екран
+│   │   └── settings.tsx   # Налаштування
+│   ├── pet/[id].tsx       # Деталі тварини
+│   ├── add-pet.tsx        # Додавання тварини
+│   └── notifications.tsx  # Сповіщення
+├── components/            # Реюзабельні компоненти
+│   ├── pet-card.tsx       # Картка тварини
+│   ├── search-bar.tsx     # Поле пошуку
+│   ├── filter-chips.tsx   # Фільтри
+│   └── ...
+├── api/                   # API інтеграція
+│   └── pets.ts            # API для тварин
+├── store/                 # Redux store
+│   ├── favoritesSlice.ts # Slice для улюблених
+│   └── store.ts           # Конфігурація store
+├── contexts/              # Context API
+│   └── theme-context.tsx  # Контекст теми
+└── constants/             # Константи
+    └── theme.ts           # Кольори та теми
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🚀 Початок роботи
 
-## Learn more
+### Встановлення залежностей
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+pnpm install
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Запуск застосунку
 
-## Join the community
+```bash
+# iOS
+pnpm ios
 
-Join our community of developers creating universal apps.
+# Android
+pnpm android
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Web
+pnpm web
+```
+
+## 📊 Оптимізація
+
+### Оптимізація рендерів
+- React.memo для компонентів
+- useCallback для функцій
+- useMemo для обчислень
+- Детальна документація в `RENDER_OPTIMIZATION.md`
+
+### Оптимізація бандлу
+- Заміна moment.js на day.js (97% економія)
+- Детальна документація в `BUNDLE_OPTIMIZATION.md`
+
+## 🎨 Особливості дизайну
+
+- ✅ Підтримка темної/світлої теми
+- ✅ Плавні анімації переходів
+- ✅ Haptic feedback
+- ✅ Консистентний дизайн
+- ✅ Адаптивний layout
+
+## 📚 Документація
+
+- [ANALYSIS.md](./ANALYSIS.md) - Аналіз поточного стану
+- [IMPROVEMENTS.md](./IMPROVEMENTS.md) - Опис всіх покращень
+- [RENDER_OPTIMIZATION.md](./RENDER_OPTIMIZATION.md) - Оптимізація рендерів
+- [BUNDLE_OPTIMIZATION.md](./BUNDLE_OPTIMIZATION.md) - Оптимізація бандлу
+- [RENDER_COMPARISON.md](./RENDER_COMPARISON.md) - Порівняння рендерів
+
+## 🔄 Управління станом
+
+### Redux Toolkit
+Використовується для:
+- Улюблені тварини (глобальний стан)
+
+### Context API
+Використовується для:
+- Тема (світла/темна/системна)
+
+### Локальний стан
+Використовується для:
+- Пошук та фільтрація
+- Форма додавання тварини
+- UI стан компонентів
+
+## 🌐 API Integration
+
+### Endpoints
+- `GET /pets` - Отримання всіх тварин
+- `GET /pets/:id` - Отримання тварини по ID
+- `POST /pets` - Створення нової тварини
+
+### Mock API
+Використовується MockAPI для тестування:
+- https://68b5f788e5dc090291b09b08.mockapi.io/pets
+
+## ✨ Нові функції (v2.0)
+
+### Пошук та фільтрація
+- Real-time пошук по імені
+- Фільтрація улюблених (All / Favorites)
+
+### Додавання тварини
+- Повнофункціональна форма
+- Валідація полів
+- Модальна презентація
+- Інтеграція з API (POST запит)
+- Автоматичне оновлення списку після збереження
+
+### Notifications
+- Список сповіщень
+- Різні типи сповіщень
+- Статус прочитання
+
+### UX покращення
+- Pull-to-refresh
+- Плавні анімації
+- Покращені empty states
+- Оптимізований пошук (збереження фокусу)
+- Автоматичне оновлення даних
+
+## 📱 Скріншоти
+
+### Головний екран
+![Home Screen](./Simulator%20Screenshot%20-%20iPhone%2017%20Pro%20-%202025-12-01%20at%2013.32.33.png)
+
+## 🤝 Внесок
+
+Проєкт розроблено в рамках навчальної дисципліни з мобільної розробки.
+
+## 📄 Ліцензія
+
+Private project
