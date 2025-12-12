@@ -11,6 +11,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Timeline } from '@/components/timeline';
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/contexts/theme-context';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -20,22 +22,18 @@ import {
   View,
 } from 'react-native';
 
+dayjs.extend(isoWeek);
+
 function convertPetToDetails(pet: Pet): { label: string; value: string }[] {
-  const birthDate = new Date(pet.birthdate);
-  const today = new Date();
-  const ageInMonths = Math.floor(
-    (today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
-  );
+  const birthDate = dayjs(pet.birthdate);
+  const today = dayjs();
+  const ageInMonths = today.diff(birthDate, 'month');
   const ageText =
     ageInMonths < 12
       ? `${ageInMonths} months`
       : `${Math.floor(ageInMonths / 12)} years`;
 
-  const formattedBirthdate = birthDate.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+  const formattedBirthdate = birthDate.format('DD/MM/YYYY');
 
   const formattedWeight = `${pet.weight} kg`;
   const formattedGender =
@@ -88,26 +86,16 @@ export default function PetDetailsScreen() {
   }, [id, loadPet]);
 
   const calendarDays = useMemo(() => {
-    const today = new Date();
-    const currentDay = today.getDate();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const monday = new Date(currentYear, currentMonth, currentDay - mondayOffset);
+    const today = dayjs();
+    const monday = today.startOf('isoWeek');
 
     const dayNames = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
     const days: { day: string; date: number; isSelected?: boolean }[] = [];
 
     for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
-      const dateNumber = date.getDate();
-      const isToday =
-        dateNumber === currentDay &&
-        date.getMonth() === currentMonth &&
-        date.getFullYear() === currentYear;
+      const date = monday.add(i, 'day');
+      const dateNumber = date.date();
+      const isToday = date.isSame(today, 'day');
 
       days.push({
         day: dayNames[i],

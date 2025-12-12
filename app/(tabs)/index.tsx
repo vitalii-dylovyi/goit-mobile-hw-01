@@ -6,12 +6,19 @@ import { PetCard } from '@/components/pet-card';
 import { ProfileButton } from '@/components/profile-button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { USE_OPTIMIZATIONS } from '@/config/optimization';
 import { Colors } from '@/constants/theme';
 import { useTheme } from '@/contexts/theme-context';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux-hooks';
 import { toggleFavorite } from '@/store/favoritesSlice';
+import {
+  logRenderStatsSummary,
+  resetRenderStats,
+  setOptimizationPhase,
+  trackRender,
+} from '@/utils/render-tracker';
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -23,8 +30,31 @@ export default function HomeScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const colors = Colors[theme];
-  
-  // Redux для керування улюбленими тваринами
+
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+
+  if (__DEV__) {
+    trackRender('HomeScreen');
+    console.log(`[HomeScreen] Render #${renderCount.current}`);
+    
+    if (renderCount.current === 1) {
+      const phase = USE_OPTIMIZATIONS ? 'after' : 'before';
+      setOptimizationPhase(phase);
+      resetRenderStats();
+      console.log(`\n[HomeScreen] ===== Testing ${phase.toUpperCase()} optimization =====`);
+      console.log('[HomeScreen] Initial load completed');
+      
+      setTimeout(() => {
+        logRenderStatsSummary();
+        console.log('📌 IMPORTANT: Click on a favorite heart icon to see the difference!');
+        console.log('   With optimization: only 1 PetCard should re-render');
+        console.log('   Without optimization: ALL PetCards should re-render');
+        console.log('   After clicking, check the console for render counts\n');
+      }, 2000);
+    }
+  }
+
   const dispatch = useAppDispatch();
 
   const [pets, setPets] = useState<Pet[]>([]);
@@ -83,28 +113,61 @@ export default function HomeScreen() {
 
   const favoriteIds = useAppSelector((state) => state.favorites.favoriteIds);
 
-  const renderPetItem = ({ item }: { item: Pet }) => {
+  const handlePetPressCallback = useCallback(
+    (petId: string) => {
+      router.push(`/pet/${petId}`);
+    },
+    [router]
+  );
+  const handlePetPressPlain = (petId: string) => {
+    router.push(`/pet/${petId}`);
+  };
+  const handlePetPress = USE_OPTIMIZATIONS ? handlePetPressCallback : handlePetPressPlain;
+
+  const handleFavoritePressCallback = useCallback(
+    (petId: string) => {
+      dispatch(toggleFavorite(petId));
+    },
+    [dispatch]
+  );
+  const handleFavoritePressPlain = (petId: string) => {
+    dispatch(toggleFavorite(petId));
+  };
+  const handleFavoritePress = USE_OPTIMIZATIONS
+    ? handleFavoritePressCallback
+    : handleFavoritePressPlain;
+
+  const renderPetItemFn = ({ item }: { item: Pet }) => {
     const isFavorite = favoriteIds.includes(item.id);
-    
+
+    if (__DEV__) {
+      console.log(`[renderPetItem] Rendering ${item.name}, isFavorite: ${isFavorite}`);
+    }
+
     return (
       <PetCard
         name={item.name}
         type={item.type}
         imageSource={item.img}
+        petId={item.id}
         isFavorite={isFavorite}
-        onPress={() => {
-          router.push(`/pet/${item.id}`);
-        }}
-        onFavoritePress={() => {
-          dispatch(toggleFavorite(item.id));
-        }}
+        onPress={handlePetPress}
+        onFavoritePress={handleFavoritePress}
       />
     );
   };
 
-  const keyExtractor = (item: Pet) => item.id;
+  const renderPetItemCallback = useCallback(renderPetItemFn, [
+    favoriteIds,
+    handlePetPress,
+    handleFavoritePress,
+  ]);
+  const renderPetItem = USE_OPTIMIZATIONS ? renderPetItemCallback : renderPetItemFn;
 
-  const renderListHeader = () => (
+  const keyExtractorCallback = useCallback((item: Pet) => item.id, []);
+  const keyExtractor = USE_OPTIMIZATIONS ? keyExtractorCallback : (item: Pet) => item.id;
+
+  const renderListHeaderFn = () => (
     <View>
       <ThemedText style={styles.greeting}>Hello, Mark!</ThemedText>
       <ThemedText style={dynamicStyles.description}>
@@ -112,8 +175,12 @@ export default function HomeScreen() {
       </ThemedText>
     </View>
   );
+  const renderListHeaderCallback = useCallback(renderListHeaderFn, [
+    dynamicStyles.description,
+  ]);
+  const renderListHeader = USE_OPTIMIZATIONS ? renderListHeaderCallback : renderListHeaderFn;
 
-  const renderLoading = () => (
+  const renderLoadingFn = () => (
     <View style={dynamicStyles.loadingContainer}>
       <ActivityIndicator size="large" color={colors.primary} />
       <ThemedText style={[dynamicStyles.description, { marginTop: 16 }]}>
@@ -121,8 +188,14 @@ export default function HomeScreen() {
       </ThemedText>
     </View>
   );
+  const renderLoadingCallback = useCallback(renderLoadingFn, [
+    colors.primary,
+    dynamicStyles.loadingContainer,
+    dynamicStyles.description,
+  ]);
+  const renderLoading = USE_OPTIMIZATIONS ? renderLoadingCallback : renderLoadingFn;
 
-  const renderError = () => (
+  const renderErrorFn = () => (
     <View style={dynamicStyles.emptyContainer}>
       <ThemedText style={dynamicStyles.errorText}>
         {error || 'Failed to load pets'}
@@ -134,14 +207,30 @@ export default function HomeScreen() {
       </ThemedText>
     </View>
   );
+  const renderErrorCallback = useCallback(renderErrorFn, [
+    error,
+    dynamicStyles.emptyContainer,
+    dynamicStyles.errorText,
+    dynamicStyles.description,
+  ]);
+  const renderError = USE_OPTIMIZATIONS ? renderErrorCallback : renderErrorFn;
 
-  const renderEmpty = () => (
+  const renderEmptyFn = () => (
     <View style={dynamicStyles.emptyContainer}>
       <ThemedText style={dynamicStyles.description}>
         No pets found. Add your first pet!
       </ThemedText>
     </View>
   );
+  const renderEmptyCallback = useCallback(renderEmptyFn, [
+    dynamicStyles.emptyContainer,
+    dynamicStyles.description,
+  ]);
+  const renderEmpty = USE_OPTIMIZATIONS ? renderEmptyCallback : renderEmptyFn;
+
+  const renderSeparatorFn = () => <View style={styles.separator} />;
+  const renderSeparatorCallback = useCallback(renderSeparatorFn, []);
+  const renderSeparator = USE_OPTIMIZATIONS ? renderSeparatorCallback : renderSeparatorFn;
 
   return (
     <ThemedView style={styles.container}>
@@ -178,7 +267,7 @@ export default function HomeScreen() {
           keyExtractor={keyExtractor}
           ListHeaderComponent={renderListHeader}
           ListEmptyComponent={renderEmpty}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          ItemSeparatorComponent={renderSeparator}
         />
       )}
 
@@ -188,7 +277,7 @@ export default function HomeScreen() {
           console.log('Add new pet');
         }}
       />
-    </ThemedView>
+      </ThemedView>
   );
 }
 

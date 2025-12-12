@@ -8,7 +8,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "analyze-bundle": "react-native-bundle-visualizer"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -17,6 +18,7 @@
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
     "@reduxjs/toolkit": "^2.11.1",
+    "dayjs": "^1.11.19",
     "expo": "~54.0.25",
     "expo-constants": "~18.0.10",
     "expo-font": "~14.0.9",
@@ -44,6 +46,8 @@
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
+    "react-native-bundle-visualizer": "^3.1.3",
+    "source-map-explorer": "^2.5.3",
     "typescript": "~5.9.2"
   },
   "private": true
